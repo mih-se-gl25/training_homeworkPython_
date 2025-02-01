@@ -1,0 +1,26 @@
+{
+    "red team": [
+        {
+            "name": "bigRedShip",
+            "armor": 100,
+            "hit": 70
+        },
+        {
+            "name": "smallRedShip",
+            "armor": 70,
+            "hit": 30
+        }
+    ],
+    "blue team": [
+        {
+            "name": "bigBlueShip",
+            "armor": 100,
+            "hit": 70
+        },
+        {
+            "name": "smallBlueShip",
+            "armor": 70,
+            "hit": 30
+        }
+    ]
+}
