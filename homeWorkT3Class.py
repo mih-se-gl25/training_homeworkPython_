@@ -27,7 +27,6 @@ class Ship():
     def giveHit(self):
         return random.uniform(self.power/4, self.power)
     
-   # def drowning(self, A)
     def getHit(self, inputDamage):
 
         result = self.armor - inputDamage
@@ -48,9 +47,6 @@ class Ship():
             pass
         return self.isKilled
 
-
-#class CreateSimulation(Ship):
-#    pass
 @staticmethod
 def import1team():
     with open('t3-1appsettings.json') as f:
@@ -64,22 +60,13 @@ def import2team():
         jsonRaw = json.load(f)
         team2 = (jsonRaw["blue team"])
     return team2
+               
 
-# t = Ship(100.0,100.0,"lap")
-# print(t.giveHit())
-# print(t.getHit(t.giveHit()))    
-# print(t.getHit(105)) 
-# print(t.isDrowning)   
-# print(t.stepCheckerAndDrowningController())
-# print(t.stepCheckerAndDrowningController())
-                    
-class Team(Ship):
+class Team:
 
-    def __init__(self,setTeam, _army=[], count:int=0):
+    def __init__(self,setTeam):
         self.team = setTeam
-        self._army= _army
-        self.count = len(self._army)
-        #self.teamName = teamName
+        self._army= []
 
     def setShips(self): 
         
@@ -87,17 +74,19 @@ class Team(Ship):
             self._army.append(Ship(shipName=ship["name"], armor=ship["armor"], power=ship["hit"]))
         return self._army
     
-    def checkIfShipIsAlive(self):
+    def teamCheckByAliveAndDrowning(self):
         for ship in self._army:
+            if ship.isDrowning == True:
+                ship.stepToDie += 1
+                if ship.stepToDie >= 2:
+                    ship.isKilled = True
             if ship.isKilled == True:
-                self._army.remove(ship)
-                self.count()
-    
+                self._army.remove(ship)            
+            else:
+                pass
+
     def returnRandomTarget(self) -> object:
         return random.choice(self._army)
-
-
-
 
 class BattleSimulation(Team):
     def __init__(self, oneTeam, twoTeam, moveIterator:int=0):
@@ -106,53 +95,49 @@ class BattleSimulation(Team):
         self.moveIterator = moveIterator
     
     def checkForVictory(self) -> bool:
-        if self.oneTeam.count == 0 or self.twoTeam.count == 0:
-            return True
+        if len(self.oneTeam._army) == 0 or len(self.twoTeam._army) == 0:
+            return True,
         else:
             return False
 
-    # def runSimulations(self, checkForVictory):
-    #     while checkForVictory() != True:
-    #         for 
+    def returnWinnerTeam(self) -> object:
+        if len(self.oneTeam._army) == 0:
+            return "2 team is win"
+        if len(self.twoTeam._army) ==0:
+            return "1 team is win"
+        else:
+            pass
 
     def BattleStepBy1Team(self):
-        for ship in self.twoTeam._army:
+        for ship in self.oneTeam._army:
             hit = ship.giveHit()
-            target = self.oneTeam.returnRandomTarget()
+            target = self.twoTeam.returnRandomTarget()
             target.getHit(hit)
-            print(f"{ship.shipName} make {hit} hit for {target.shipName}")
+
+            print(f"{ship.shipName} make {hit} hit for {target.shipName}, his armor set as = {target.armor}")
     
     def BattleStepBy2Team(self):
         for ship in self.twoTeam._army:
             hit = ship.giveHit()
-            self.oneTeamTeam.returnRandomTarget.getHit(hit)
-  #  def setRandomTargetForHit(self):
+            target = self.oneTeam.returnRandomTarget()
+            target.getHit(hit)
+   
+            print(f"{ship.shipName} make {hit} hit for {target.shipName}, his armor set as = {target.armor}")
+
+    def runSimulations(self):
+        while self.checkForVictory() == False:
+            self.BattleStepBy1Team()
+            self.BattleStepBy2Team()
+            self.oneTeam.teamCheckByAliveAndDrowning()
+            self.twoTeam.teamCheckByAliveAndDrowning()
+            print("-------------------------------------------------")
+        print(f"fight is finished, {self.returnWinnerTeam()}")
 
 
+team_one = Team(setTeam=import1team())
+team_one.setShips()
+team_two = Team(setTeam=import2team())
+team_two.setShips()
+o = BattleSimulation(team_one,team_two)
+o.runSimulations()
 
-
-# d = Team(setTeam=import1team())
-# d.setShips()
-# print(d.team[1],d.team[0])
-# print(type(d.team[0]))
-# print(type(d.team))
-# print(list(d.army))
-# print(type(d.army))
-t1 = Team(setTeam=import1team())
-t1.setShips()
-
-t2 = Team(setTeam=import2team())
-t2.setShips()
-
-a= BattleSimulation(t1, t2)
-print(a.twoTeam._army)
-print(type(a.twoTeam))# a.oneTeam.setShips()
-
-print(a.twoTeam._army)
-print(type(a.twoTeam))
-
-print(a.oneTeam._army)
-print(type(a.oneTeam))
-
-
-a.BattleStepBy1Team()

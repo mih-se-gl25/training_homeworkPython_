@@ -21,6 +21,11 @@
             "name": "smallBlueShip",
             "armor": 70,
             "hit": 30
+        },
+        {
+            "name": "smallestBlueShip",
+            "armor": 10,
+            "hit": 20
         }
     ]
 }
