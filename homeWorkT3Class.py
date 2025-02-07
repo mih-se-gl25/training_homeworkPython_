@@ -47,20 +47,17 @@ class Ship():
             pass
         return self.isKilled
 
-@staticmethod
-def import1team():
-    with open('t3-1appsettings.json') as f:
-        jsonRaw = json.load(f)
-        team1 = (jsonRaw["red team"])
-    return team1
+class ImportJson:
+    def __init__(self, file='t3-1appsettings.json'):
+        self.file = file
+        with open(self.file) as f:
+            self.jsonRaw = json.load(f)
+            self.keyList = list(self.jsonRaw.keys())
+    
+    def getTeam(self, number:int):
+        return self.jsonRaw[self.keyList[number-1]]
 
-@staticmethod
-def import2team():
-    with open('t3-1appsettings.json') as f:
-        jsonRaw = json.load(f)
-        team2 = (jsonRaw["blue team"])
-    return team2
-               
+
 
 class Team:
 
@@ -133,11 +130,14 @@ class BattleSimulation(Team):
             print("-------------------------------------------------")
         print(f"fight is finished, {self.returnWinnerTeam()}")
 
-
-team_one = Team(setTeam=import1team())
+js=ImportJson()
+# print(js.getTeam(1))
+team_one = Team(setTeam=js.getTeam(1))
 team_one.setShips()
-team_two = Team(setTeam=import2team())
+team_two = Team(setTeam=js.getTeam(2))
 team_two.setShips()
 o = BattleSimulation(team_one,team_two)
 o.runSimulations()
 
+# q = JsonImport(1)
+# print(q.importJson())
