@@ -10,12 +10,16 @@
 # until one of that team will run out of ships. Number of ships in each team,
 # armour and power of each ship should be stored in json file, designing
 # format of this json is also a part of homework.
-
+import logging
 import json
 import random
+import sys
 
+logger = logging.getLogger(__name__)
 class Ship():
     def __init__(self, power:float, armor:float, shipName:str, inputDamage:float=0, stepToDie:int=0, isKilled:bool=False, isDrowning:bool =False) -> None:
+        if armor<0:
+            raise ValueError("Incorrect armor value")
         self.power = power
         self.armor = armor
         self.shipName = shipName
@@ -30,7 +34,7 @@ class Ship():
     def getHit(self, inputDamage):
 
         result = self.armor - inputDamage
-        if result < 0:
+        if result <= 0:
             self.isDrowning = True
             self.armor = 0
         else:
@@ -49,15 +53,17 @@ class Ship():
 
 class ImportJson:
     def __init__(self, file='t3-1appsettings.json'):
-        self.file = file
-        with open(self.file) as f:
-            self.jsonRaw = json.load(f)
-            self.keyList = list(self.jsonRaw.keys())
+        try:
+            self.file = file
+            with open(self.file) as f:
+                self.jsonRaw = json.load(f)
+                self.keyList = list(self.jsonRaw.keys())
+        except FileNotFoundError:
+            logger.error("json (t3-1appsettings.json) not found")
+            sys.exit(0)
     
     def getTeam(self, number:int):
         return self.jsonRaw[self.keyList[number-1]]
-
-
 
 class Team:
 
@@ -86,10 +92,9 @@ class Team:
         return random.choice(self._army)
 
 class BattleSimulation(Team):
-    def __init__(self, oneTeam, twoTeam, moveIterator:int=0):
+    def __init__(self, oneTeam, twoTeam):
         self.oneTeam =oneTeam
         self.twoTeam =twoTeam
-        self.moveIterator = moveIterator
     
     def checkForVictory(self) -> bool:
         if len(self.oneTeam._army) == 0 or len(self.twoTeam._army) == 0:
@@ -131,13 +136,9 @@ class BattleSimulation(Team):
         print(f"fight is finished, {self.returnWinnerTeam()}")
 
 js=ImportJson()
-# print(js.getTeam(1))
 team_one = Team(setTeam=js.getTeam(1))
 team_one.setShips()
 team_two = Team(setTeam=js.getTeam(2))
 team_two.setShips()
 o = BattleSimulation(team_one,team_two)
 o.runSimulations()
-
-# q = JsonImport(1)
-# print(q.importJson())
