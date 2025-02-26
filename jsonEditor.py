@@ -1,9 +1,12 @@
-import os
+
 import sys
 import logging
 import json
+import argparse
 
 logger = logging.getLogger(__name__)
+
+
 
 class ImportJson:
     def __call__(self, file='JSON.json'):
@@ -43,8 +46,39 @@ class EditFields:
     def fin (self):
         return self.imp
      
-g = EditFields(ImportJson()())
-g.set_new_port("SET_0",11343431)
-g.set_new_port("SET_7",955434599)
-g.set_new_by_MediaInterfaceConf_statusConf1(key="VERSION",value=22222.0)
-save_in_file(g.fin())
+    def set_manual(self, value:str, key, key2=None, key3=None):
+        if key2 and key3:
+            self.imp[key][key2][key3] = value
+        elif key2:
+            self.imp[key][key2] = value
+        else:
+            raise logger.error("incorrect input")
+        pass
+
+
+# g = EditFields(ImportJson()())
+
+# g.set_manual(11,"Port Settings","SET_0")
+# save_in_file(g.fin())
+
+
+
+def main():
+    parser = argparse.ArgumentParser(description="json editor", formatter_class=argparse.RawDescriptionHelpFormatter)
+    
+    parser.add_argument("value")
+    parser.add_argument("key")
+    parser.add_argument("--key2",help="(optional)")
+    parser.add_argument("--key3",help="(optional)")
+    args = parser.parse_args()
+    
+    program = EditFields(ImportJson()())
+    program.set_manual(args.value, args.key, args.key2, args.key3)
+    save_in_file(program.fin())
+    
+if __name__ =="__main__":
+    main()
+    
+    
+    
+    
