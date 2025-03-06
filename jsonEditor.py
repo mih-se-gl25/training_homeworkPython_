@@ -1,4 +1,4 @@
-
+from netaddr import EUI
 import sys
 import logging
 import json
@@ -46,7 +46,7 @@ class EditFields:
     def fin (self):
         return self.imp
      
-    def set_manual(self, value:str, key, key2=None, key3=None):
+    def set_manual(self, value, key, key2=None, key3=None):
         if key2 and key3:
             self.imp[key][key2][key3] = value
         elif key2:
@@ -55,14 +55,14 @@ class EditFields:
             raise logger.error("incorrect input")
         pass
 
+def set_type(value):
+    try:
+        return int(value)
+    except ValueError:
+        return value
+# I can use netaddr EUI(value) for work with mac address but in current task it`s str format
 
-# g = EditFields(ImportJson()())
-
-# g.set_manual(11,"Port Settings","SET_0")
-# save_in_file(g.fin())
-
-
-
+    
 def main():
     parser = argparse.ArgumentParser(description="json editor", formatter_class=argparse.RawDescriptionHelpFormatter)
     
@@ -73,7 +73,8 @@ def main():
     args = parser.parse_args()
     
     program = EditFields(ImportJson()())
-    program.set_manual(args.value, args.key, args.key2, args.key3)
+    
+    program.set_manual(set_type(args.value), args.key, args.key2, args.key3)
     save_in_file(program.fin())
     
 if __name__ =="__main__":
