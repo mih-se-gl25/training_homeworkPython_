@@ -3,6 +3,8 @@ import sys
 import logging
 import json
 import argparse
+import re
+from dateutil.parser import parse
 
 logger = logging.getLogger(__name__)
 
@@ -55,13 +57,50 @@ class EditFields:
             raise logger.error("incorrect input")
         pass
 
-def set_type(value):
+
+    
+def set_bool(value) -> bool: 
+    if value == "true":
+        return True
+    elif value == "false":
+        return False
+
+def set_time(value):
+    return str(parse(value))
+    
+def set_hex(value):
+    return int(value, 0)
+
+def is_decimal(value):
     try:
-        return int(value)
+        float(value)
+        return True
+    except ValueError:
+        return False
+
+def set_type(value):
+    hex_pattern = r"^0[xX][0-9a-fA-F]+$"
+    try:
+        if value.lower() in {"true","false"} :
+            return set_bool(value=value.lower())
+        elif bool(re.fullmatch(hex_pattern, value)) == True:
+            return set_hex(value=value)
+        
+        elif value.isdigit() or (value.startswith("-") and value[1:].isdigit()):
+            return int(value)
+        
+        elif is_decimal(value) == True:
+            return float(value)
+        
+        elif bool(parse(value)) == True:
+            return set_time(value)
+        
+        else:
+            return value()
     except ValueError:
         return value
 # I can use netaddr EUI(value) for work with mac address but in current task it`s str format
-
+# hex, decimal, bool, date-time !!
     
 def main():
     parser = argparse.ArgumentParser(description="json editor", formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -79,7 +118,10 @@ def main():
     
 if __name__ =="__main__":
     main()
-    
+
+# program = EditFields(ImportJson()())
+# program.set_manual(set_type("-9"), "Interface Settings","2nd_interface")
+# save_in_file(program.fin())
     
     
     
